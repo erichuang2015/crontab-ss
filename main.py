@@ -4,9 +4,10 @@
 import json
 import os
 import sys
-
 import requests
 from bs4 import BeautifulSoup
+
+from config import USERNAME, PASSWORD
 
 
 def craw_data():
@@ -53,22 +54,20 @@ def craw_data():
         )
 
 
-def get_best_ss(ss_data):
+def sorted_ss(ss_data):
     """
-    返回延迟最小的ss
+    根据ss延迟返回排序的数据
     :param ss_data:
     :return:
     """
-    min_time = 100
-    best_server = None
+    ret_data = []
     for item in ss_data:
         print(item)
         ping_result = os.popen('ping -c 3 -t 5 {}'.format(item.get('ip'))).readlines()[-1]
         avg_time = float(ping_result.split(' = ')[1].split('/')[1])
-        if avg_time < min_time:
-            min_time = avg_time
-            best_server = item
-    return best_server
+        item['avg_time'] = avg_time
+        ret_data.append(item)
+    return sorted(ret_data, key=lambda x: x.get('avg_time'))
 
 
 def write_ss_config(ss):
@@ -97,7 +96,47 @@ def write_ss_config(ss):
     f.close()
 
 
+def set_route_ss(ss_data):
+    """
+    设置到路由器
+    :param ss_data:
+    :return:
+    """
+    url = 'http://192.168.123.1/start_apply.htm'
+    payload = {
+        'current_page': '/Advanced_Extensions_SS.asp', 'sid_list': 'LANHostConfig;General;',
+        'action_mode': ' Apply ', 'wan_ipaddr': '192.168.1.2', 'wan_netmask': '255.255.255.0',
+        'dhcp_start': '192.168.123.2', 'dhcp_end': '192.168.123.244', 'v2ray_follow_o': '0',
+        'ss_run_ss_local': '0', 'ss_enable': '1', 'v2ray_follow': '0', 'ss_type': '0',
+        'ss_mode_x': '0', 'kcptun2_enable': '2', 'kcptun2_enable2': '2',
+        'ss_s1_local_address': '0.0.0.0', 'ss_s2_local_address': '0.0.0.0', 'ss_s1_local_port': '1081',
+        'ss_s2_local_port': '1082',
+        'ss_server': ss_data[0].get('ip'),
+        'ss_server2': ss_data[1].get('ip'),
+        'ss_server_port': ss_data[0].get('port'),
+        'ss_s2_port': ss_data[1].get('port'),
+        'ss_key': ss_data[0].get('password'),
+        'ss_s2_key': ss_data[1].get('password'),
+        'ss_method': ss_data[0].get('method'),
+        'ss_s2_method': ss_data[1].get('method'), 'ssr_type_protocol_write': 'null',
+        'ssr2_type_protocol_write': 'null', 'ssr_type_obfs_write': 'null', 'ssr2_type_obfs_write': 'null',
+        'ss_multiport': '22,80,443', 'ss_tochina_enable': '0', 'ss_udp_enable': '1',
+        'ss_DNS_Redirect': '0', 'ss_dnsproxy_x': '0', 'ss_pdnsd_wo_redir': '1', 'ss_pdnsd_all': '0',
+        'ss_3p_enable': '1', 'ss_3p_gfwlist': '1', 'ss_3p_kool': '1', 'ss_sub1': '1', 'ss_sub3': '1',
+        'ss_check': '1', 'ss_keep_check': '1', 'ss_link_1': 'www.163.com',
+        'ss_link_2': 'www.google.com.hk', 'ss_updatess': '0', 'ss_update': '0', 'ss_update_hour': '23',
+        'ss_update_min': '59',
+        'scripts.shadowsocks_mydomain_script.sh': 'www.91ribiw.site\r\nwww.taofulile.com\r\n',
+        'LAN_AC_IP': '0', 'scripts.shadowsocks_ss_spec_lan.sh':
+            '#b,192.168.123.115\r\n#g,192.168.123.116\r\n#n,192.168.123.117\r\n#1,192.168.123.118\r\n#2,192.168.123.119\r\n#b,099B9A909FD9\r\n#1,099B9A909FD9\r\n#2,A9:CB:3A:5F:1F:C7\r\n\r\n\r\n',
+        'scripts.shadowsocks_ss_spec_wan.sh':
+            'WAN@raw.githubusercontent.com\r\n#WAN+8.8.8.8\r\n#WAN@www.google.com\r\n#WAN!www.baidu.com\r\n#WAN-223.5.5.5\r\n#WAN-114.114.114.114\r\nWAN!members.3322.org\r\nWAN!www.cloudxns.net\r\nWAN!dnsapi.cn\r\nWAN!api.dnspod.com\r\nWAN!www.ipip.net\r\nWAN!alidns.aliyuncs.com\r\n\r\n\r\n#以下样板是四个网段分别对应BLZ的美/欧/韩/台服\r\n#WAN+24.105.0.0/18\r\n#WAN+80.239.208.0/20\r\n#WAN+182.162.0.0/16\r\n#WAN+210.242.235.0/24\r\n#以下样板是telegram\r\n#WAN+149.154.160.1/32\r\n#WAN+149.154.160.2/31\r\n#WAN+149.154.160.4/30\r\n#WAN+149.154.160.8/29\r\n#WAN+149.154.160.16/28\r\n#WAN+149.154.160.32/27\r\n#WAN+149.154.160.64/26\r\n#WAN+149.154.160.128/25\r\n#WAN+149.154.161.0/24\r\n#WAN+149.154.162.0/23\r\n#WAN+149.154.164.0/22\r\n#WAN+149.154.168.0/21\r\n#WAN+91.108.4.0/22\r\n#WAN+91.108.56.0/24\r\n#WAN+109.239.140.0/24\r\n#WAN+67.198.55.0/24\r\n#WAN+91.108.56.172\r\n#WAN+149.154.175.50\r\n\r\n\r\nWAN!opt.cn2qq.com\r\n'
+    }
+    requests.post(url, data=payload, auth=(USERNAME, PASSWORD))
+
+
 if __name__ == '__main__':
     data = craw_data()
-    best_ss = get_best_ss(data)
-    write_ss_config(best_ss)
+    ss_data = sorted_ss(data)
+    set_route_ss(ss_data)
+    write_ss_config(ss_data[0])
