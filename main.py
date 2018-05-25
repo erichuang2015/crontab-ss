@@ -7,7 +7,7 @@ import sys
 import requests
 from bs4 import BeautifulSoup
 
-from config import USERNAME, PASSWORD
+from config import USERNAME, PASSWORD, ROUTER_SERVER
 
 
 def craw_data():
@@ -102,13 +102,13 @@ def set_route_ss(ss_data):
     :param ss_data:
     :return:
     """
-    url = 'http://192.168.123.1/start_apply.htm'
+    url = 'http://{}/start_apply.htm'.format(ROUTER_SERVER)
     payload = {
         'current_page': '/Advanced_Extensions_SS.asp', 'sid_list': 'LANHostConfig;General;',
         'action_mode': ' Apply ', 'wan_ipaddr': '192.168.1.2', 'wan_netmask': '255.255.255.0',
         'dhcp_start': '192.168.123.2', 'dhcp_end': '192.168.123.244', 'v2ray_follow_o': '0',
         'ss_run_ss_local': '0', 'ss_enable': '1', 'v2ray_follow': '0', 'ss_type': '0',
-        'ss_mode_x': '0', 'kcptun2_enable': '2', 'kcptun2_enable2': '2',
+        'ss_mode_x': '0', 'kcptun2_enable': '0', 'kcptun2_enable2': '2',
         'ss_s1_local_address': '0.0.0.0', 'ss_s2_local_address': '0.0.0.0', 'ss_s1_local_port': '1081',
         'ss_s2_local_port': '1082',
         'ss_server': ss_data[0].get('ip'),
@@ -132,7 +132,8 @@ def set_route_ss(ss_data):
         'scripts.shadowsocks_ss_spec_wan.sh':
             'WAN@raw.githubusercontent.com\r\n#WAN+8.8.8.8\r\n#WAN@www.google.com\r\n#WAN!www.baidu.com\r\n#WAN-223.5.5.5\r\n#WAN-114.114.114.114\r\nWAN!members.3322.org\r\nWAN!www.cloudxns.net\r\nWAN!dnsapi.cn\r\nWAN!api.dnspod.com\r\nWAN!www.ipip.net\r\nWAN!alidns.aliyuncs.com\r\n\r\n\r\n#以下样板是四个网段分别对应BLZ的美/欧/韩/台服\r\n#WAN+24.105.0.0/18\r\n#WAN+80.239.208.0/20\r\n#WAN+182.162.0.0/16\r\n#WAN+210.242.235.0/24\r\n#以下样板是telegram\r\n#WAN+149.154.160.1/32\r\n#WAN+149.154.160.2/31\r\n#WAN+149.154.160.4/30\r\n#WAN+149.154.160.8/29\r\n#WAN+149.154.160.16/28\r\n#WAN+149.154.160.32/27\r\n#WAN+149.154.160.64/26\r\n#WAN+149.154.160.128/25\r\n#WAN+149.154.161.0/24\r\n#WAN+149.154.162.0/23\r\n#WAN+149.154.164.0/22\r\n#WAN+149.154.168.0/21\r\n#WAN+91.108.4.0/22\r\n#WAN+91.108.56.0/24\r\n#WAN+109.239.140.0/24\r\n#WAN+67.198.55.0/24\r\n#WAN+91.108.56.172\r\n#WAN+149.154.175.50\r\n\r\n\r\nWAN!opt.cn2qq.com\r\n'
     }
-    requests.post(url, data=payload, auth=(USERNAME, PASSWORD))
+    ret = requests.post(url, data=payload, auth=(USERNAME, PASSWORD))
+    print(ret)
 
 
 if __name__ == '__main__':

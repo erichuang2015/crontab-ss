@@ -1,1 +1,35 @@
-{"index": 0, "random": false, "global": false, "enabled": true, "shareOverLan": false, "isDefault": false, "localPort": 1080, "pacUrl": null, "useOnlinePac": false, "reconnectTimes": 3, "randomAlgorithm": 0, "TTL": 0, "proxyEnable": false, "proxyType": 0, "proxyHost": null, "proxyPort": 0, "proxyAuthUser": null, "proxyAuthPass": null, "authUser": null, "authPass": null, "autoban": false, "configs": [{"remarks": "jpc.isxa.top", "server": "jpc.isxa.top", "server_port": "19580", "method": "aes-256-cfb", "password": "isx.yt-20383994", "tcp_over_udp": false, "udp_over_tcp": false, "enable": true}]}
+{
+  "index": 0,
+  "random": false,
+  "global": false,
+  "enabled": true,
+  "shareOverLan": false,
+  "isDefault": false,
+  "localPort": 1080,
+  "pacUrl": null,
+  "useOnlinePac": false,
+  "reconnectTimes": 3,
+  "randomAlgorithm": 0,
+  "TTL": 0,
+  "proxyEnable": false,
+  "proxyType": 0,
+  "proxyHost": null,
+  "proxyPort": 0,
+  "proxyAuthUser": null,
+  "proxyAuthPass": null,
+  "authUser": null,
+  "authPass": null,
+  "autoban": false,
+  "configs": [
+    {
+      "remarks": "jpc.isxa.top",
+      "server": "jpc.isxa.top",
+      "server_port": "11338",
+      "method": "aes-256-cfb",
+      "password": "isx.yt-83216383",
+      "tcp_over_udp": false,
+      "udp_over_tcp": false,
+      "enable": true
+    }
+  ]
+}
