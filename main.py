@@ -63,7 +63,7 @@ def sorted_ss(ss_data):
     ret_data = []
     for item in ss_data:
         print(item)
-        ping_result = os.popen('ping -c 3 -t 5 {}'.format(item.get('ip'))).readlines()[-1]
+        ping_result = os.popen('ping -c 3 {}'.format(item.get('ip'))).readlines()[-1]
         avg_time = float(ping_result.split(' = ')[1].split('/')[1])
         item['avg_time'] = avg_time
         ret_data.append(item)
