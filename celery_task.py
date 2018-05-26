@@ -1,3 +1,5 @@
+import datetime
+
 from celery import Celery
 
 from common import craw_data, sorted_ss, set_route_ss
@@ -12,4 +14,5 @@ def refresh_ss():
     data = craw_data()
     data = sorted_ss(data)
     set_route_ss(data)
-    helper.set('qr_code', data[0].get('qr_code'))
+    helper.set('ss', data[0])
+    helper.set('last_refresh_time', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))

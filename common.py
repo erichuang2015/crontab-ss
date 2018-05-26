@@ -7,6 +7,20 @@ from bs4 import BeautifulSoup
 
 from config import USERNAME, PASSWORD, ROUTER_SERVER
 
+headers = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'zh-CN,zh;q=0.9,zh-TW;q=0.8,en;q=0.7',
+    'Cache-Control': 'max-age=0',
+    'Connection': 'keep-alive',
+    'Cookie': '_ga=GA1.2.1423561819.1527240616; _gid=GA1.2.748244877.1527240616',
+    'Host': 'my.ishadowx.net',
+    'Upgrade-Insecure-Requests': '1',
+    'If-Modified-Since': 'Fri, 25 May 2018 07:20:14 GMT',
+    'If-None-Match': '"69a5-56d02996666b3-gzip"',
+    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'
+}
+
 
 def craw_data():
     """
@@ -14,24 +28,8 @@ def craw_data():
     :return:
     """
     ss_url = 'https://my.ishadowx.net/'
-    headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Accept-Language': 'zh-CN,zh;q=0.9,zh-TW;q=0.8,en;q=0.7',
-        'Cache-Control': 'max-age=0',
-        'Connection': 'keep-alive',
-        'Cookie': '_ga=GA1.2.1423561819.1527240616; _gid=GA1.2.748244877.1527240616',
-        'Host': 'my.ishadowx.net',
-        'Upgrade-Insecure-Requests': '1',
-        'If-Modified-Since': 'Fri, 25 May 2018 07:20:14 GMT',
-        'If-None-Match': '"69a5-56d02996666b3-gzip"',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36'
-    }
-
     ret = requests.get(ss_url, headers=headers)
-
     bs4 = BeautifulSoup(ret.text, 'lxml')
-
     items = bs4.find_all(class_='portfolio-item')
     for item in items:
         h4s = item.find_all('h4')
@@ -131,4 +129,3 @@ def set_route_ss(ss_data):
             'WAN@raw.githubusercontent.com\r\n#WAN+8.8.8.8\r\n#WAN@www.google.com\r\n#WAN!www.baidu.com\r\n#WAN-223.5.5.5\r\n#WAN-114.114.114.114\r\nWAN!members.3322.org\r\nWAN!www.cloudxns.net\r\nWAN!dnsapi.cn\r\nWAN!api.dnspod.com\r\nWAN!www.ipip.net\r\nWAN!alidns.aliyuncs.com\r\n\r\n\r\n#以下样板是四个网段分别对应BLZ的美/欧/韩/台服\r\n#WAN+24.105.0.0/18\r\n#WAN+80.239.208.0/20\r\n#WAN+182.162.0.0/16\r\n#WAN+210.242.235.0/24\r\n#以下样板是telegram\r\n#WAN+149.154.160.1/32\r\n#WAN+149.154.160.2/31\r\n#WAN+149.154.160.4/30\r\n#WAN+149.154.160.8/29\r\n#WAN+149.154.160.16/28\r\n#WAN+149.154.160.32/27\r\n#WAN+149.154.160.64/26\r\n#WAN+149.154.160.128/25\r\n#WAN+149.154.161.0/24\r\n#WAN+149.154.162.0/23\r\n#WAN+149.154.164.0/22\r\n#WAN+149.154.168.0/21\r\n#WAN+91.108.4.0/22\r\n#WAN+91.108.56.0/24\r\n#WAN+109.239.140.0/24\r\n#WAN+67.198.55.0/24\r\n#WAN+91.108.56.172\r\n#WAN+149.154.175.50\r\n\r\n\r\nWAN!opt.cn2qq.com\r\n'
     }
     requests.post(url, data=payload, auth=(USERNAME, PASSWORD))
-

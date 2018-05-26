@@ -1,7 +1,10 @@
+import requests
 import werobot
-from flask import render_template
+from flask import Response
+from werobot.replies import ArticlesReply, Article
 
 from celery_task import refresh_ss as refresh_ss_task
+from common import headers
 from redis_helper import helper
 
 robot = werobot.WeRoBot()
@@ -9,11 +12,27 @@ robot.config.from_pyfile('config.py')
 
 
 def index():
-    qr_code = helper.get('qr_code')
-    return render_template('index.html', qr_code=qr_code)
+    ss = eval(helper.get('ss'))
+    ret = requests.get(ss.get('qr_code'), headers=headers)
+    return Response(response=ret.content, mimetype='image/jpg')
 
 
 @robot.filter('刷新ss')
 def refresh_ss():
     refresh_ss_task.delay()
-    return '刷新成功！'
+    return '刷新成功！上次刷新时间：{}'.format(helper.get('last_refresh_time') or '无')
+
+
+@robot.filter('ss')
+def get_ss(message):
+    ss = eval(helper.get('ss'))
+    reply = ArticlesReply(message=message)
+    article = Article(
+        title='ss账号',
+        description='ip:{}\nport:{}\npassword:{}\nmethod:{}'.format(ss.get('ip'), ss.get('port'), ss.get('password'),
+                                                                    ss.get('method')),
+        img=ss.get('qr_code'),
+        url='http://wechat.long2ice.cn/'
+    )
+    reply.add_article(article)
+    return reply
