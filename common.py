@@ -5,7 +5,7 @@ import sys
 import requests
 from bs4 import BeautifulSoup
 
-from config import USERNAME, PASSWORD, ROUTER_SERVER
+from config import USERNAME, PASSWORD, ROUTER_SERVER, SECRET_KEY
 
 headers = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
@@ -41,13 +41,14 @@ def craw_data():
             qr_code = 'https://my.ishadowx.net/' + h4s[4].a['href']
         except TypeError:
             break
-        yield dict(
-            ip=ip,
-            port=port,
-            password=password,
-            method=method,
-            qr_code=qr_code
-        )
+        if ip and port and password and method and qr_code:
+            yield dict(
+                ip=ip,
+                port=port,
+                password=password,
+                method=method,
+                qr_code=qr_code
+            )
 
 
 def sorted_ss(ss_data):
@@ -60,7 +61,10 @@ def sorted_ss(ss_data):
     for item in ss_data:
         print(item)
         ping_result = os.popen('ping -c 3 {}'.format(item.get('ip'))).readlines()[-1]
-        avg_time = float(ping_result.split(' = ')[1].split('/')[1])
+        try:
+            avg_time = float(ping_result.split(' = ')[1].split('/')[1])
+        except IndexError:
+            continue
         item['avg_time'] = avg_time
         ret_data.append(item)
     return sorted(ret_data, key=lambda x: x.get('avg_time'))
@@ -128,4 +132,28 @@ def set_route_ss(ss_data):
         'scripts.shadowsocks_ss_spec_wan.sh':
             'WAN@raw.githubusercontent.com\r\n#WAN+8.8.8.8\r\n#WAN@www.google.com\r\n#WAN!www.baidu.com\r\n#WAN-223.5.5.5\r\n#WAN-114.114.114.114\r\nWAN!members.3322.org\r\nWAN!www.cloudxns.net\r\nWAN!dnsapi.cn\r\nWAN!api.dnspod.com\r\nWAN!www.ipip.net\r\nWAN!alidns.aliyuncs.com\r\n\r\n\r\n#以下样板是四个网段分别对应BLZ的美/欧/韩/台服\r\n#WAN+24.105.0.0/18\r\n#WAN+80.239.208.0/20\r\n#WAN+182.162.0.0/16\r\n#WAN+210.242.235.0/24\r\n#以下样板是telegram\r\n#WAN+149.154.160.1/32\r\n#WAN+149.154.160.2/31\r\n#WAN+149.154.160.4/30\r\n#WAN+149.154.160.8/29\r\n#WAN+149.154.160.16/28\r\n#WAN+149.154.160.32/27\r\n#WAN+149.154.160.64/26\r\n#WAN+149.154.160.128/25\r\n#WAN+149.154.161.0/24\r\n#WAN+149.154.162.0/23\r\n#WAN+149.154.164.0/22\r\n#WAN+149.154.168.0/21\r\n#WAN+91.108.4.0/22\r\n#WAN+91.108.56.0/24\r\n#WAN+109.239.140.0/24\r\n#WAN+67.198.55.0/24\r\n#WAN+91.108.56.172\r\n#WAN+149.154.175.50\r\n\r\n\r\nWAN!opt.cn2qq.com\r\n'
     }
-    requests.post(url, data=payload, auth=(USERNAME, PASSWORD))
+    ret = requests.post(url, data=payload, auth=(USERNAME, PASSWORD))
+    print(ret)
+
+
+def notify_message(title, message):
+    """
+    通过server酱发送通知
+    :return:
+    """
+    url = 'https://sc.ftqq.com/{}.send'.format(SECRET_KEY)
+    data = {
+        'text': title,
+        'desp': message
+    }
+    requests.post(url, data=data)
+
+
+def ss_to_str(ss):
+    """
+    ss账号转字符串
+    :param ss:
+    :return:
+    """
+    return 'ip:{}\nport:{}\npassword:{}\nmethod:{}'.format(ss.get('ip'), ss.get('port'), ss.get('password'),
+                                                           ss.get('method'))

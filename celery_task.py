@@ -1,4 +1,5 @@
 import datetime
+import operator
 
 from celery import Celery
 
@@ -14,5 +15,7 @@ def refresh_ss():
     data = craw_data()
     data = sorted_ss(data)
     set_route_ss(data)
-    helper.set('ss', data[0])
+    ss = eval(helper.get('ss'))
+    if not operator.eq(ss, data[0]):
+        helper.set('ss', data[0])
     helper.set('last_refresh_time', datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S'))

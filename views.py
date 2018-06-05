@@ -4,7 +4,7 @@ from flask import Response
 from werobot.replies import ArticlesReply, Article
 
 from celery_task import refresh_ss as refresh_ss_task
-from common import headers
+from common import headers, ss_to_str
 from redis_helper import helper
 
 robot = werobot.WeRoBot()
@@ -29,8 +29,7 @@ def get_ss(message):
     reply = ArticlesReply(message=message)
     article = Article(
         title='ss账号',
-        description='ip:{}\nport:{}\npassword:{}\nmethod:{}'.format(ss.get('ip'), ss.get('port'), ss.get('password'),
-                                                                    ss.get('method')),
+        description=ss_to_str(ss),
         img=ss.get('qr_code'),
         url='http://wechat.long2ice.cn/'
     )

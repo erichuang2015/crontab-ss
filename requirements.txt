@@ -6,3 +6,4 @@ lxml
 cryptography
 redis
 celery
+flask-mail
