@@ -1,6 +1,8 @@
+import base64
 import json
 import os
 import sys
+from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -22,7 +24,7 @@ headers = {
 }
 
 
-def craw_data():
+def crawl_ss():
     """
     获取所有的ss账号
     :return:
@@ -63,6 +65,7 @@ def sorted_ss(ss_data):
         ping_result = os.popen('ping -c 3 {}'.format(item.get('ip'))).readlines()[-1]
         try:
             avg_time = float(ping_result.split(' = ')[1].split('/')[1])
+            print(avg_time)
         except IndexError:
             continue
         item['avg_time'] = avg_time
@@ -96,19 +99,24 @@ def write_ss_config(ss):
     f.close()
 
 
-def set_route_ss(ss_data):
+def set_route_ss(ss_data, is_ss=True):
     """
     设置到路由器
+    :param is_ss: ss or ssr
     :param ss_data:
     :return:
     """
+    if is_ss:
+        ss_type = '0'
+    else:
+        ss_type = '1'
     url = 'http://{}/start_apply.htm'.format(ROUTER_SERVER)
     payload = {
         'current_page': '/Advanced_Extensions_SS.asp', 'sid_list': 'LANHostConfig;General;',
         'action_mode': ' Apply ', 'wan_ipaddr': '192.168.1.2', 'wan_netmask': '255.255.255.0',
         'dhcp_start': '192.168.123.2', 'dhcp_end': '192.168.123.244', 'v2ray_follow_o': '0',
-        'ss_run_ss_local': '0', 'ss_enable': '1', 'v2ray_follow': '0', 'ss_type': '0',
-        'ss_mode_x': '0', 'kcptun2_enable': '0', 'kcptun2_enable2': '2',
+        'ss_run_ss_local': '0', 'ss_enable': '1', 'v2ray_follow': '0', 'ss_type': ss_type,
+        'ss_mode_x': '1', 'kcptun2_enable': '0', 'kcptun2_enable2': '0',
         'ss_s1_local_address': '0.0.0.0', 'ss_s2_local_address': '0.0.0.0', 'ss_s1_local_port': '1081',
         'ss_s2_local_port': '1082',
         'ss_server': ss_data[0].get('ip'),
@@ -132,6 +140,17 @@ def set_route_ss(ss_data):
         'scripts.shadowsocks_ss_spec_wan.sh':
             'WAN@raw.githubusercontent.com\r\n#WAN+8.8.8.8\r\n#WAN@www.google.com\r\n#WAN!www.baidu.com\r\n#WAN-223.5.5.5\r\n#WAN-114.114.114.114\r\nWAN!members.3322.org\r\nWAN!www.cloudxns.net\r\nWAN!dnsapi.cn\r\nWAN!api.dnspod.com\r\nWAN!www.ipip.net\r\nWAN!alidns.aliyuncs.com\r\n\r\n\r\n#以下样板是四个网段分别对应BLZ的美/欧/韩/台服\r\n#WAN+24.105.0.0/18\r\n#WAN+80.239.208.0/20\r\n#WAN+182.162.0.0/16\r\n#WAN+210.242.235.0/24\r\n#以下样板是telegram\r\n#WAN+149.154.160.1/32\r\n#WAN+149.154.160.2/31\r\n#WAN+149.154.160.4/30\r\n#WAN+149.154.160.8/29\r\n#WAN+149.154.160.16/28\r\n#WAN+149.154.160.32/27\r\n#WAN+149.154.160.64/26\r\n#WAN+149.154.160.128/25\r\n#WAN+149.154.161.0/24\r\n#WAN+149.154.162.0/23\r\n#WAN+149.154.164.0/22\r\n#WAN+149.154.168.0/21\r\n#WAN+91.108.4.0/22\r\n#WAN+91.108.56.0/24\r\n#WAN+109.239.140.0/24\r\n#WAN+67.198.55.0/24\r\n#WAN+91.108.56.172\r\n#WAN+149.154.175.50\r\n\r\n\r\nWAN!opt.cn2qq.com\r\n'
     }
+    if not is_ss:
+        payload['ss_usage'] = '-O origin -o plain'
+        payload['ss_s2_usage'] = '-O origin -o plain'
+        payload['ssr2_type_obfs'] = 'plain'
+        payload['ssr2_type_obfs_write'] = 'plain'
+        payload['ssr_type_obfs'] = 'plain'
+        payload['ssr_type_obfs_write'] = 'plain'
+        payload['ssr2_type_protocol'] = 'origin'
+        payload['ssr2_type_protocol_write'] = 'origin'
+        payload['ssr_type_protocol'] = 'origin'
+        payload['ssr_type_protocol_write'] = 'origin'
     ret = requests.post(url, data=payload, auth=(USERNAME, PASSWORD))
     print(ret)
 
@@ -157,3 +176,25 @@ def ss_to_str(ss):
     """
     return 'ip:{}\nport:{}\npassword:{}\nmethod:{}'.format(ss.get('ip'), ss.get('port'), ss.get('password'),
                                                            ss.get('method'))
+
+
+def crawl_ssr():
+    ret = requests.get('https://tool.ssrshare.xyz/tool/api/free_ssr?key=1529510400_9_lpk&page=1&limit=90').json()
+    ss_list = ret.get('data')
+    ss_data = []
+    for ss in ss_list:
+        if ss.get('m_station_cn_status') == 'true':
+            ss_data.append(dict(
+                ip=ss.get('server'),
+                port=ss.get('server_port'),
+                password=ss.get('password'),
+                method=ss.get('server'),
+                qrcode=None,
+                avg_time=ss.get('m_station_cn_ms')
+            ))
+    return sorted(ss_data, key=lambda x: x.get('avg_time'))
+
+
+def b64decode(s):
+    s += '=' * (-len(s) % 4)
+    return base64.b64decode(s).decode()

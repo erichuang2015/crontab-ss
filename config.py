@@ -19,7 +19,14 @@ result_backend = broker_url
 beat_schedule = {
     'refresh-ss-every-hour': {
         'task': 'celery_task.refresh_ss',
-        'schedule': crontab(hour='*'),
-        'args': None
+        'schedule': crontab(minute='*/10'),
+        'args': [True]
     },
 }
+# email
+MAIL_SERVER = ''
+MAIL_USERNAME = ''
+MAIL_PASSWORD = ''
+MAIL_DEFAULT_SENDER = ''
+# server酱
+SECRET_KEY = ''
