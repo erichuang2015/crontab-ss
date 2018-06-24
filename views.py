@@ -20,7 +20,13 @@ def index():
 @robot.filter('刷新ss')
 def refresh_ss():
     refresh_ss_task.delay()
-    return '刷新成功！上次刷新时间：{}'.format(helper.get('last_refresh_time') or '无')
+    return '刷新ss成功！上次刷新时间：{}'.format(helper.get('last_refresh_time') or '无')
+
+
+@robot.filter('刷新ssr')
+def refresh_ss():
+    refresh_ss_task.delay(False)
+    return '刷新ssr成功！上次刷新时间：{}'.format(helper.get('last_refresh_time') or '无')
 
 
 @robot.filter('ss')
