@@ -110,7 +110,7 @@ def set_route_ss(ss_data, is_ss=True):
         ss_type = '0'
     else:
         ss_type = '1'
-    url = 'http://{}/start_apply.htm'.format(ROUTER_SERVER)
+    url = 'https://{}/start_apply.htm'.format(ROUTER_SERVER)
     payload = {
         'current_page': '/Advanced_Extensions_SS.asp', 'sid_list': 'LANHostConfig;General;',
         'action_mode': ' Apply ', 'wan_ipaddr': '192.168.1.2', 'wan_netmask': '255.255.255.0',
