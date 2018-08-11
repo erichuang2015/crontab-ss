@@ -29,7 +29,7 @@ def crawl_ss():
     获取所有的ss账号
     :return:
     """
-    ss_url = 'https://my.ishadowx.net/'
+    ss_url = 'https://us.ishadowx.net/'
     ret = requests.get(ss_url, headers=headers)
     bs4 = BeautifulSoup(ret.text, 'lxml')
     items = bs4.find_all(class_='portfolio-item')
