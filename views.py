@@ -3,12 +3,13 @@ import werobot
 from flask import Response
 from werobot.replies import ArticlesReply, Article
 
+import config
 from celery_task import refresh_ss as refresh_ss_task
 from common import headers, ss_to_str
 from redis_helper import helper
 
 robot = werobot.WeRoBot()
-robot.config.from_pyfile('config.py')
+robot.config = config
 
 
 def index():

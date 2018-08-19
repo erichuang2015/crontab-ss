@@ -2,7 +2,6 @@ import base64
 import json
 import os
 import sys
-from urllib.parse import urlparse
 
 import requests
 from bs4 import BeautifulSoup
@@ -10,13 +9,13 @@ from bs4 import BeautifulSoup
 from config import USERNAME, PASSWORD, ROUTER_SERVER, SECRET_KEY
 
 headers = {
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+    'Accept': 'image/webp,image/apng,image/*,*/*;q=0.8',
     'Accept-Encoding': 'gzip, deflate, br',
     'Accept-Language': 'zh-CN,zh;q=0.9,zh-TW;q=0.8,en;q=0.7',
-    'Cache-Control': 'max-age=0',
+    'Cache-Control': 'no-cache',
     'Connection': 'keep-alive',
     'Cookie': '_ga=GA1.2.1423561819.1527240616; _gid=GA1.2.748244877.1527240616',
-    'Host': 'my.ishadowx.net',
+    'Host': 'us.ishadowx.net',
     'Upgrade-Insecure-Requests': '1',
     'If-Modified-Since': 'Fri, 25 May 2018 07:20:14 GMT',
     'If-None-Match': '"69a5-56d02996666b3-gzip"',
@@ -40,7 +39,7 @@ def crawl_ss():
         password = h4s[2].span.string.strip()
         method = h4s[3].string.strip().split(':')[1]
         try:
-            qr_code = 'https://my.ishadowx.net/' + h4s[4].a['href']
+            qr_code = 'https://us.ishadowx.net/' + h4s[4].a['href']
         except TypeError:
             break
         if ip and port and password and method and qr_code:
