@@ -28,8 +28,8 @@ beat_schedule = {
     # },
     'sign-ss-every-day': {
         'task': 'celery_task.sign_ss',
-        'schedule': crontab(minute=0, hour=8),
-        'args': None
+        'schedule': crontab(minute='0', hour='22'),
+        'args': []
     },
 }
 # email

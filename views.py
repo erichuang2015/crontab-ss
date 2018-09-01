@@ -4,7 +4,7 @@ from flask import Response
 from werobot.replies import ArticlesReply, Article
 
 import config
-from celery_task import refresh_ss as refresh_ss_task
+from celery_task import refresh_ss as refresh_ss_task, start_up_pc
 from common import headers, ss_to_str
 from redis_helper import helper
 
@@ -28,6 +28,11 @@ def refresh_ss():
 def refresh_ss():
     refresh_ss_task.delay(False)
     return '刷新ssr成功！上次刷新时间：{}'.format(helper.get('last_refresh_time') or '无')
+
+
+@robot.filter('开机')
+def start_up():
+    return start_up_pc()
 
 
 @robot.filter('ss')
