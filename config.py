@@ -33,7 +33,7 @@ beat_schedule = {
     },
     'touch-ss': {
         'task': 'celery_task.touch_web_driver',
-        'schedule': crontab(minute='10'),
+        'schedule': crontab(minute='*/10'),
         'args': []
     },
 }
