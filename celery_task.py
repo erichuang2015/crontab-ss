@@ -71,7 +71,7 @@ def touch_web_driver():
     latest = ret_dict.get('plist').get('dict').get('array').get('dict')[0]
     version = latest.get('string')[5]
     url = latest.get('string')[0]
-    if version != '387.10.10.10.40.10':
+    if version != '387.10.10.10.40.105':
         with app.app_context():
             msg = Message(subject='webdriver更新了！', recipients=['long2ice@qq.com'], body=url)
             mail.send(msg)
