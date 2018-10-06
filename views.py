@@ -1,9 +1,11 @@
 import requests
 import werobot
 from flask import Response
+from werobot.contrib.flask import make_view
 from werobot.replies import ArticlesReply, Article
 
 import config
+from app import app
 from celery_task import refresh_ss as refresh_ss_task, start_up_pc
 from common import headers, ss_to_str
 from redis_helper import helper
@@ -11,7 +13,10 @@ from redis_helper import helper
 robot = werobot.WeRoBot()
 robot.config = config
 
+app.add_url_rule('/robot', view_func=make_view(robot), methods=['GET', 'POST'])
 
+
+@app.route('/')
 def index():
     ss = eval(helper.get('ss'))
     ret = requests.get(ss.get('qr_code'), headers=headers)

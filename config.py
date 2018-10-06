@@ -18,8 +18,8 @@ ENCODING_AES_KEY = os.getenv('ENCODING_AES_KEY')
 REDIS_HOST = os.getenv('REDIS_HOST')
 REDIS_PASSWORD = os.getenv('REDIS_PASSWORD')
 # celery
-broker_url = os.getenv('broker_url')
-result_backend = broker_url
+CELERY_BROKER_URL = os.getenv('broker_url')
+result_backend = CELERY_BROKER_URL
 beat_schedule = {
     # 'refresh-ss-every-hour': {
     #     'task': 'celery_task.refresh_ss',
@@ -31,8 +31,14 @@ beat_schedule = {
         'schedule': crontab(minute='0', hour='22'),
         'args': []
     },
+    'touch-ss': {
+        'task': 'celery_task.touch_web_driver',
+        'schedule': crontab(minute='10'),
+        'args': []
+    },
 }
 # email
+MAIL_DEBUG = 0
 MAIL_SERVER = os.getenv('MAIL_SERVER')
 MAIL_USERNAME = os.getenv('MAIL_USERNAME')
 MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
