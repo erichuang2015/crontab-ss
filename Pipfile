@@ -16,7 +16,6 @@ Flask-Mail = "*"
 python-dotenv = "*"
 xmltodict = "*"
 gunicorn = "*"
-celery = "*"
 
 [dev-packages]
 
